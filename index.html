@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>단종의 역사 퀴즈</title>
+<style>
+:root{--ink:#3d2b19;--red:#75413c;--gold:#98702e;--line:#d8c39b}
+*{box-sizing:border-box}body{margin:0;padding:22px 12px 40px;color:var(--ink);font-family:"Noto Serif KR","Batang",serif;background:radial-gradient(ellipse at 10% 10%,#c9b68b55,transparent 35%),radial-gradient(ellipse at 90% 90%,#75413c22,transparent 30%),repeating-linear-gradient(0deg,#80633a08 0 1px,transparent 1px 4px),#e9dfca;min-height:100vh}
+.wrap{max-width:780px;margin:auto}.top{height:7px;background:linear-gradient(90deg,transparent,var(--red),var(--gold),var(--red),transparent);margin:5px 0 24px}
+header{text-align:center;margin-bottom:20px}.seal{margin:auto auto 8px;border:1px solid var(--gold);border-radius:50%;width:46px;height:46px;display:grid;place-items:center;color:var(--gold);font-size:24px}
+h1{font-size:clamp(28px,5vw,42px);margin:0;letter-spacing:.08em}header p{color:#806b50;font-size:14px}
+.card{background:linear-gradient(135deg,#fffdf6f5,#f5ecd9f5);border:1px solid var(--line);box-shadow:0 12px 32px #4a321b20;padding:clamp(18px,4vw,32px);margin:18px 0;position:relative}
+.card:before,.card:after{content:"❖";position:absolute;top:8px;color:#b99b65}.card:before{left:10px}.card:after{right:10px}
+h2{color:var(--red);margin:0 0 15px;font-size:22px}p{line-height:1.75}input{font:inherit}
+input[type=text]{width:100%;padding:13px;border:1px solid #cbb58b;background:#fffdf8;border-radius:4px;font-size:16px;color:var(--ink)}
+button{font:inherit;cursor:pointer;border:0;border-radius:4px;padding:13px 18px;background:var(--red);color:#fff8e9}button:hover{filter:brightness(1.12)}button:disabled{opacity:.45;cursor:not-allowed}
+.gold{background:#98702e}.secondary{background:#806b50}.row{display:flex;gap:10px;flex-wrap:wrap}.row button{flex:1}
+.note{font-size:13px;color:#806b50;line-height:1.7}.hidden{display:none!important}
+.stats{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#806b50;font-size:14px;margin-bottom:13px}
+.timerbox,.progress{height:8px;background:#e5d8bd;overflow:hidden;margin:8px 0 19px}.timerbar,.progressbar{height:100%;background:#526b4c;width:100%;transition:width .2s linear}.timerbar.urgent{background:#a23e35}
+.qnumber{color:var(--gold);font-size:13px;letter-spacing:.12em}.question{font-size:clamp(19px,3.5vw,25px);line-height:1.6;margin:9px 0 20px}
+.options{display:grid;gap:10px}.option{display:flex;gap:12px;align-items:center;text-align:left;background:#fffaf0;color:var(--ink);border:1px solid #d7c49e}
+.option .num{width:28px;height:28px;border:1px solid #b89b66;border-radius:50%;display:grid;place-items:center;flex:none}
+.option.correct{border:2px solid #55734d;background:#e8efdf}.option.wrong{border:2px solid #a34b43;background:#f5e4df}
+.feedback{margin-top:15px;padding:12px;background:#eee4cf;border-left:3px solid var(--gold);line-height:1.65}
+.center{text-align:center}.score{font-size:42px;color:var(--red);font-weight:bold;text-align:center;margin:12px}
+.resultbox{background:#efe5d1;border:1px solid #d7c49e;padding:14px;margin:12px 0;text-align:center;line-height:1.8}
+footer{text-align:center;color:#8c795e;font-size:12px;margin-top:24px}
+@media(max-width:500px){.row button{min-width:100%}}
+</style></head><body><main class="wrap"><div class="top"></div>
+<header><div class="seal">朝</div><h1>단종의 역사 퀴즈</h1><p>조선의 역사 · 단종의 생애와 계유정난</p></header>
+<section id="intro" class="card"><h2>퀴즈 시작</h2><p>단종의 출생과 즉위, 계유정난, 유배와 죽음에 관한 10문제를 풀어보세요.</p>
+<label for="nickname">닉네임</label><input id="nickname" type="text" maxlength="12" placeholder="닉네임을 입력하세요">
+<p class="note">모든 문제는 객관식입니다. 문제당 제한 시간은 10초이며, 시간이 끝나면 자동으로 다음 문제로 넘어갑니다.</p>
+<button id="start" class="gold" style="width:100%">퀴즈 시작하기</button></section>
+<section id="quiz" class="card hidden"><div class="stats"><span id="player"></span><span id="score">점수 0점</span></div>
+<div class="stats"><span>객관식 · 10초</span><b id="time">남은 시간 10초</b></div><div class="timerbox"><div id="bar" class="timerbar"></div></div>
+<div id="number" class="qnumber"></div><h2 id="question" class="question"></h2><div id="options" class="options"></div>
+<div id="feedback" class="feedback hidden"></div><div class="progress"><div id="progress" class="progressbar" style="width:0"></div></div><button id="next" class="hidden">다음 문제</button></section>
+<section id="result" class="card hidden"><h2 class="center">나의 퀴즈 결과</h2><p id="resultName" class="center"></p><div id="finalScore" class="score"></div><div id="myRank" class="resultbox"></div><p class="note center">일반 참가자 화면에서는 다른 참가자의 점수와 닉네임을 볼 수 없습니다.</p><div class="row"><button id="again" class="gold">다시 도전하기</button><button id="home" class="secondary">처음 화면으로</button></div><h3 style="color:var(--red)">문제별 정답 확인</h3><div id="review"></div></section>
+<footer>단종의 역사 퀴즈 · 참가 기록은 이 브라우저에 저장됩니다.</footer></main>
+<script>
+const KEY="danjongQuizSharedRanks_v2";
+const Q=[
+{q:"단종이 태어난 해는 언제일까?",o:["1439년","1441년","1443년","1450년"],a:1,w:"단종은 1441년 8월 18일에 태어났습니다."},
+{q:"단종의 어머니는 누구일까?",o:["소헌왕후","정순왕후","현덕왕후","인수대비"],a:2,w:"단종의 어머니는 현덕왕후 권씨입니다."},
+{q:"단종의 휘(왕의 본명)는 무엇일까?",o:["이향(李珦)","이홍위(李弘暐)","이유(李瑈)","이도(李祹)"],a:1,w:"단종의 휘는 이홍위(李弘暐)입니다."},
+{q:"문종이 단종을 보살피도록 맡긴 대신들은 누구일까?",o:["김종서와 황보인","성삼문과 박팽년","수양대군과 안평대군","한명회와 신숙주"],a:0,w:"문종은 김종서와 황보인 등 믿을 만한 대신들에게 단종을 부탁했습니다."},
+{q:"계유정난이 일어난 날짜는 언제일까?",o:["1452년 6월 14일","1453년 10월 10일","1455년 7월 12일","1457년 11월 16일"],a:1,w:"계유정난은 1453년 10월 10일에 일어났습니다."},
+{q:"계유정난을 일으킨 인물은 누구일까?",o:["안평대군","김종서","수양대군","황보인"],a:2,w:"수양대군이 군사력을 동원해 계유정난을 일으켰습니다."},
+{q:"단종이 유배된 장소는 어디일까?",o:["한양","청령포","자선당","경복궁"],a:1,w:"단종은 강원도 영월로 유배되었으며 유배지는 청령포입니다."},
+{q:"1456년 단종의 복위를 위해 일어난 사건은 무엇일까?",o:["임진왜란","사육신 사건","계유정난","중종반정"],a:1,w:"1456년 단종의 복위를 꾀한 사건으로, 사육신 사건이라고 부릅니다."},
+{q:"단종이 노산군으로 강등된 뒤 유배된 지역은 어디일까?",o:["경기도 수원","강원도 영월","전라도 전주","충청도 공주"],a:1,w:"단종은 노산군으로 강등된 뒤 강원도 영월로 유배되었습니다."},
+{q:"단종의 장례를 치르는 데 나선 영월의 아전은 누구일까?",o:["김종서","황보인","엄흥도","성삼문"],a:2,w:"사진 자료에는 영월의 아전 엄흥도가 장례를 치렀다고 나와 있습니다."}
+];
+let name="",idx=0,points=0,remain=0,tick=null,startAt=0,locked=false,logs=[];
+const $=x=>document.getElementById(x),screens=["intro","quiz","result"];
+function show(id){screens.forEach(x=>$(x).classList.toggle("hidden",x!==id))}
+function getRecords(){try{return JSON.parse(localStorage.getItem(KEY)||"[]")}catch(e){return []}}
+function start(){name=$("nickname").value.trim();if(!name){$("nickname").focus();return}idx=0;points=0;logs=[];startAt=Date.now();$("player").textContent=name+" 님";$("score").textContent="점수 0점";show("quiz");draw()}
+function draw(){clearInterval(tick);locked=false;remain=10;let q=Q[idx];$("number").textContent=`QUESTION ${String(idx+1).padStart(2,"0")} / 10`;$("question").textContent=q.q;$("time").textContent="남은 시간 10초";$("bar").style.width="100%";$("bar").classList.remove("urgent");$("feedback").classList.add("hidden");$("next").classList.add("hidden");$("progress").style.width=(idx/10*100)+"%";$("options").innerHTML="";
+q.o.forEach((v,i)=>{let b=document.createElement("button");b.className="option";b.innerHTML=`<span class="num">${i+1}</span>${v}`;b.onclick=()=>choose(i);$("options").appendChild(b)});
+tick=setInterval(()=>{remain--;$("time").textContent="남은 시간 "+remain+"초";$("bar").style.width=(remain/10*100)+"%";if(remain<=3)$("bar").classList.add("urgent");if(remain<=0){clearInterval(tick);choose(-1,true)}},1000)}
+function choose(n,timeout=false){if(locked)return;locked=true;clearInterval(tick);let q=Q[idx],ok=n===q.a;if(ok)points++;[...$("options").children].forEach((b,i)=>{b.disabled=true;if(i===q.a)b.classList.add("correct");if(i===n&&!ok)b.classList.add("wrong")});logs.push({ok,given:timeout?"시간 초과":n<0?"미선택":(n+1)+"번 "+q.o[n],correct:(q.a+1)+". "+q.o[q.a],why:q.w});$("score").textContent="점수 "+points+"점";$("feedback").classList.remove("hidden");$("feedback").textContent=(timeout?"시간 종료. ":"")+(ok?"정답입니다! ":"정답은 "+q.o[q.a]+"입니다. ")+q.w;$("next").textContent=idx===9?"결과 보기":"다음 문제";$("next").classList.remove("hidden");$("progress").style.width=((idx+1)*10)+"%"}
+function next(){if(!locked)return;if(idx<9){idx++;draw()}else end()}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function end(){let secs=Math.round((Date.now()-startAt)/1000),id=(Date.now().toString(36)+Math.random().toString(36).slice(2,8));let records=getRecords();records.push({id,name,points,secs,date:new Date().toLocaleDateString("ko-KR")});records.sort((a,b)=>b.points-a.points||a.secs-b.secs);localStorage.setItem(KEY,JSON.stringify(records.slice(0,1000)));let rank=records.findIndex(r=>r.id===id)+1;$("resultName").textContent=name+" 님의 결과";$("finalScore").textContent=points+" / 10점";$("myRank").innerHTML=`나의 순위: <b>${rank}위</b> / 전체 ${records.length}명<br>완료 시간: ${secs}초`; $("review").innerHTML=Q.map((q,i)=>{let r=logs[i];return `<div class="feedback"><b>${i+1}. ${q.q}</b><br><span style="color:${r.ok?"#55734d":"#9b4138"}">${r.ok?"정답":"오답"}</span> · 내 답: ${esc(r.given)}<br>정답: ${esc(r.correct)}<br><span class="note">${esc(r.why)}</span></div>`}).join("");show("result")}
+$("start").onclick=start;$("next").onclick=next;$("again").onclick=()=>{show("intro");$("nickname").value=name};$("home").onclick=()=>show("intro");$("nickname").addEventListener("keydown",e=>{if(e.key==="Enter")start()});
+</script></body></html>
